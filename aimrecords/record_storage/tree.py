@@ -21,6 +21,7 @@ class Node:
         return self.order == len(self.keys) + 1
 
     def split(self):
+        print("HELLO")
         """
         Split internal node into two nodes and move self
         up as a parent.
@@ -44,7 +45,9 @@ class Leaf(Node):
     * Sibling pointer
     """
     def __init__(self, order, keys=None, children=None, next=None):
-        super().__init__(order, keys, children)
+        self.order = order
+        self.keys = keys or []
+        self.children = children or []
         self.next = next
 
     def add(self, key, value):
@@ -64,25 +67,25 @@ class Leaf(Node):
         
         # Insert key in appropriate spot
         else:
-            for i in range(len(self.keys) - 1):
-                if self.keys[i] < key and self.keys[i+1] > key:
-                    self.keys.insert(i + 1, key)
-                    self.children.insert(i + 1, value)
+            for i in range(len(self.keys)):
+                if key < self.keys[i]:
+                    self.keys.insert(i, key)
+                    self.children.insert(i, value)
                     return
 
-        def split(self):
-            """
-            Split internal node into two nodes and move self
-            up as a parent.
-            """
-            middle = self.order // 2
-            left = Leaf(self.order, self.keys[:middle],
-                        self.children[:middle])
-            right = Leaf(self.order, self.keys[middle:],
-                         self.children[middle:])
+    def split(self):
+        """
+        Split internal node into two nodes and move self
+        up as a parent.
+        """
+        middle = self.order // 2
+        left = Leaf(self.order, self.keys[:middle],
+                    self.children[:middle])
+        right = Leaf(self.order, self.keys[middle:],
+                        self.children[middle:])
 
-            self.keys = [right.keys[0]]
-            self.children = [left, right]
+        self.keys = [right.keys[0]]
+        self.children = [left, right]
 
 
 class BPTree():
