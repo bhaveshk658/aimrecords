@@ -20,6 +20,20 @@ class Node:
         """
         return self.order == len(self.keys) + 1
 
+    def split(self):
+        """
+        Split internal node into two nodes and move self
+        up as a parent.
+        """
+        middle = self.order // 2
+        left = Node(self.order, self.keys[:middle],
+                    self.children[:middle])
+        right = Node(self.order, self.keys[middle:],
+                        self.children[middle:])
+
+        self.keys = [right.keys[0]]
+        self.children = [left, right]
+
 class Leaf(Node):
     """
     Leaf node object, order = n. Leaf nodes point to records.
@@ -35,13 +49,14 @@ class Leaf(Node):
 
     def add(self, key, value):
         """
-        Add a key-value pair to the node.
+        Add a key-value pair to the node. O(n)
+        Switch to binary search (still O(n))
         """
         # Insert key at the end
         if len(self.keys) == 0 or key > self.keys[-1]:
             self.keys.append(key)
             self.children.append(value)
-            
+
         # Insert key at the beginning
         elif key < self.keys[0]:
             self.keys.insert(0, key)
@@ -54,6 +69,21 @@ class Leaf(Node):
                     self.keys.insert(i + 1, key)
                     self.children.insert(i + 1, value)
                     return
+
+        def split(self):
+            """
+            Split internal node into two nodes and move self
+            up as a parent.
+            """
+            middle = self.order // 2
+            left = Leaf(self.order, self.keys[:middle],
+                        self.children[:middle])
+            right = Leaf(self.order, self.keys[middle:],
+                         self.children[middle:])
+
+            self.keys = [right.keys[0]]
+            self.children = [left, right]
+
 
 class BPTree():
     """
