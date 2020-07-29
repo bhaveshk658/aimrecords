@@ -27,3 +27,11 @@ class BPTree():
     * Root
     - search, insert, delete
     """
+    def __init__(self, order):
+        return
+
+    def insert(self, key, value):
+        return
+
+    def __getitem__(self, key):
+        return ""
