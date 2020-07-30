@@ -1,4 +1,5 @@
-import bisect
+
+from bisect import bisect_left
 
 class Node:
     """
@@ -21,7 +22,6 @@ class Node:
         return self.order == len(self.keys) + 1
 
     def split(self):
-        print("HELLO")
         """
         Split internal node into two nodes and move self
         up as a parent.
@@ -34,6 +34,14 @@ class Node:
 
         self.keys = [right.keys[0]]
         self.children = [left, right]
+
+    def search(self, key):
+        """
+        Binary search to see where an index should be inserted.
+        """
+        index = bisect_left(self.keys, key)
+        return index
+        
 
 class Leaf(Node):
     """
@@ -55,23 +63,9 @@ class Leaf(Node):
         Add a key-value pair to the node. O(n)
         Switch to binary search (still O(n))
         """
-        # Insert key at the end
-        if len(self.keys) == 0 or key > self.keys[-1]:
-            self.keys.append(key)
-            self.children.append(value)
-
-        # Insert key at the beginning
-        elif key < self.keys[0]:
-            self.keys.insert(0, key)
-            self.children.insert(0, value)
-        
-        # Insert key in appropriate spot
-        else:
-            for i in range(len(self.keys)):
-                if key < self.keys[i]:
-                    self.keys.insert(i, key)
-                    self.children.insert(i, value)
-                    return
+        index = self.search(key)
+        self.keys.insert(index, key)
+        self.children.insert(index, value)
 
     def split(self):
         """
@@ -86,6 +80,7 @@ class Leaf(Node):
 
         self.keys = [right.keys[0]]
         self.children = [left, right]
+        left.next = right
 
 
 class BPTree():
@@ -97,7 +92,7 @@ class BPTree():
     - search, insert, delete
     """
     def __init__(self, order):
-        return
+        self.root = Leaf(order)
 
     def insert(self, key, value):
         return
