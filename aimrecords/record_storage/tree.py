@@ -1,5 +1,5 @@
 
-from bisect import bisect_left
+from bisect import bisect_right
 
 class Node:
     """
@@ -34,7 +34,7 @@ class Node:
         Binary search to see where a key should be inserted.
         Also finds index of given key.
         """
-        index = bisect_left(self.keys, key)
+        index = bisect_right(self.keys, key)
         return index
 
     def add(self, key, value):
@@ -74,6 +74,18 @@ class BPTree():
     def __init__(self, order):
         self.root = Node(order, leaf=True)
 
+    def find_path(self, key):
+        """
+        Find path of nodes that leads to leaf node containing key.
+        """
+        current = self.root
+        path = [current]
+        while not current.is_leaf():
+            index = current.search(key)
+            current = current.children[index]
+            path.append(current)
+        return path
+
     def merge_nodes(self, parent, child, index):
         """
         Merge a child node and parent node. Occurs when a node
@@ -97,6 +109,7 @@ class BPTree():
         """
         Insert a key-value pair into the tree.
         """
+        ancestors = []
         parent = None
         child = self.root
 
@@ -111,7 +124,10 @@ class BPTree():
             child.split()
 
             if parent:
-                while parent.full():
+                self.merge_nodes(parent, child, index)
+                if parent.full():
+                    parent.split()
+
                     
 
     def __getitem__(self, key):
