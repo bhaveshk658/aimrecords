@@ -52,13 +52,21 @@ class Node:
         up as a parent.
         """
         middle = self.order // 2
-        left = Node(self.order, self.keys[:middle],
+        new_key = self.keys[middle]
+        
+        if self.is_leaf():
+            left = Node(self.order, self.keys[:middle],
                     self.children[:middle], leaf=self.leaf)
-        right = Node(self.order, self.keys[middle:],
-                        self.children[middle:], leaf=self.leaf)
+            right = Node(self.order, self.keys[middle:],
+                            self.children[middle:], leaf=self.leaf)
+        else:
+            left = Node(self.order, self.keys[:middle],
+                    self.children[:middle+1], leaf=self.leaf)
+            right = Node(self.order, self.keys[middle+1:],
+                            self.children[middle+1:], leaf=self.leaf)
 
         self.leaf = False
-        self.keys = [right.keys[0]]
+        self.keys = [new_key]
         self.children = [left, right]
         if left.is_leaf() and right.is_leaf():
             left.next = right
@@ -77,13 +85,15 @@ class BPTree():
     def find_path(self, key):
         """
         Find path of nodes that leads to leaf node containing key.
+        Or, finds path of nodes to where key should be inserted.
         """
         current = self.root
-        path = [current]
+        path = []
         while not current.is_leaf():
             index = current.search(key)
+            path.append([current, index])
             current = current.children[index]
-            path.append(current)
+        path.append([current, 0])
         return path
 
     def merge_nodes(self, parent, child, index):
@@ -93,7 +103,10 @@ class BPTree():
         """
         parent.children.pop(index)
         pivot = child.keys[0]
-
+        parent.keys.insert(index, pivot)
+        parent.children.insert(index, child.children[0])
+        parent.children.insert(index+1, child.children[1])
+        '''
         for i, item in enumerate(parent.keys):
             if pivot < item:
                 parent.keys = parent.keys[:i] + [pivot] + parent.keys[i:]
@@ -104,11 +117,13 @@ class BPTree():
                 parent.keys += [pivot]
                 parent.children += child.children
                 break
+        '''
 
     def insert(self, key, value):
         """
         Insert a key-value pair into the tree.
         """
+        '''
         ancestors = []
         parent = None
         child = self.root
@@ -117,16 +132,19 @@ class BPTree():
             parent = child
             index = child.search(key)
             child = child.children[index]
+        '''
+        path = self.find_path(key)
+        child = path[-1][0]
 
         child.add(key, value)
         
-        if child.full():
-            child.split()
-
-            if parent:
-                self.merge_nodes(parent, child, index)
-                if parent.full():
-                    parent.split()
+        for i in range(len(path) - 1, 0, -1):
+            if path[i][0].full():
+                path[i][0].split()
+                self.merge_nodes(path[i-1][0], path[i][0], path[i-1][1])
+        
+        if self.root.full():
+            self.root.split()
 
                     
 
