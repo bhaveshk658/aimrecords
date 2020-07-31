@@ -53,17 +53,18 @@ class Node:
         """
         middle = self.order // 2
         new_key = self.keys[middle]
+        next = self.next
         
         if self.is_leaf():
             left = Node(self.order, self.keys[:middle],
                     self.children[:middle], leaf=self.leaf)
             right = Node(self.order, self.keys[middle:],
-                            self.children[middle:], leaf=self.leaf)
+                            self.children[middle:], next, self.leaf)
         else:
             left = Node(self.order, self.keys[:middle],
                     self.children[:middle+1], leaf=self.leaf)
             right = Node(self.order, self.keys[middle+1:],
-                            self.children[middle+1:], leaf=self.leaf)
+                            self.children[middle+1:], next, self.leaf)
 
         self.leaf = False
         self.keys = [new_key]
@@ -101,6 +102,10 @@ class BPTree():
         Merge a child node and parent node. Occurs when a node
         splits and the parent node isn't full.
         """
+        parent.children[index-1].next = child.children[0]
+        if index != len(parent.children) - 1:
+            child.children[1].next = parent.children[index+1]
+
         parent.children.pop(index)
         pivot = child.keys[0]
         parent.keys.insert(index, pivot)
@@ -123,16 +128,6 @@ class BPTree():
         """
         Insert a key-value pair into the tree.
         """
-        '''
-        ancestors = []
-        parent = None
-        child = self.root
-
-        while not child.is_leaf():
-            parent = child
-            index = child.search(key)
-            child = child.children[index]
-        '''
         path = self.find_path(key)
         child = path[-1][0]
 

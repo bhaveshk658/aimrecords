@@ -50,6 +50,19 @@ class TreeTests(unittest.TestCase):
         self.assertEqual([20, 21], right.children[0].keys)
         self.assertEqual([25, 28], right.children[1].keys)
         self.assertEqual([31, 42], right.children[2].keys)
+
+    def test_links(self):
+        tree = BPTree(20)
+
+        for i in range(2000):
+            tree.insert(i, str(i))
         
+        node = tree.find_path(1)[-1][0]
+        total = []
+        while node:
+            total += node.keys
+            node = node.next
+        self.assertEqual(list(range(2000)), total)
+
 if __name__ == "__main__":
     unittest.main()
