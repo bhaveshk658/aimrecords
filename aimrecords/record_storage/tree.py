@@ -155,4 +155,4 @@ class BPTree():
             index = node.search(key)
             node = node.children[index]
         
-        return node.children[node.search(key)]
+        return node.children[node.search(key) - 1]
