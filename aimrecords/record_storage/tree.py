@@ -43,8 +43,17 @@ class Node:
         Switch to binary search (still O(n))
         """
         index = self.search(key)
-        self.keys.insert(index, key)
-        self.children.insert(index, value)
+        if key in self.keys:
+            if type(self.children[index - 1]) == set:
+                self.children[index - 1].add(value)
+            else:
+                s = set()
+                s.add(self.children[index - 1])
+                s.add(value)
+                self.children[index - 1] = s
+        else:
+            self.keys.insert(index, key)
+            self.children.insert(index, value)
 
     def split(self):
         """

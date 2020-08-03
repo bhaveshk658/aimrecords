@@ -64,5 +64,16 @@ class TreeTests(unittest.TestCase):
             node = node.next
         self.assertEqual(list(range(2000)), total)
 
+    def test_duplicates(self):
+        tree = BPTree(4)
+
+        nums = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
+
+        for i in range(len(nums)):
+            tree.insert(nums[i], str(i))
+
+        for i in range(len(nums)):
+            self.assertTrue(str(i) in tree[nums[i]])
+
 if __name__ == "__main__":
     unittest.main()
