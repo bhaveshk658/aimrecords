@@ -120,18 +120,6 @@ class BPTree():
         parent.keys.insert(index, pivot)
         parent.children.insert(index, child.children[0])
         parent.children.insert(index+1, child.children[1])
-        '''
-        for i, item in enumerate(parent.keys):
-            if pivot < item:
-                parent.keys = parent.keys[:i] + [pivot] + parent.keys[i:]
-                parent.children = parent.children[:i] + child.children + parent.children[i:]
-                break
-
-            elif i + 1 == len(parent.keys):
-                parent.keys += [pivot]
-                parent.children += child.children
-                break
-        '''
 
     def insert(self, key, value):
         """
@@ -149,8 +137,6 @@ class BPTree():
         
         if self.root.full():
             self.root.split()
-
-                    
 
     def __getitem__(self, key):
         node = self.root

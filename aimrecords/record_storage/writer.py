@@ -29,6 +29,7 @@ from aimrecords.record_storage.utils import (
 )
 from aimrecords.indexing.index_key import IndexKey, IndexArgType
 from aimrecords.indexing.writer import IndexWriter
+from aimrecords.record_storage.tree import BPTree
 
 
 class Writer(object):
@@ -94,7 +95,8 @@ class Writer(object):
 
     def append_record(self, data: bytes,
                       index: Optional[Union[Tuple[Union[str, int], ...],
-                                            str, int]] = None):
+                                            str, int]] = None,
+                      secondary_indexing: Dict = None):
         current_record_offset = self.current_bucket_file.tell()
         offset_b = current_record_offset.to_bytes(RECORD_OFFSET_SIZE,
                                                   ENDIANNESS)
@@ -112,6 +114,8 @@ class Writer(object):
         self.current_bucket_file.flush()
         if self._current_bucket_overflow():
             self._finalize_current_bucket()
+
+        
 
     def register_index(self, index: IndexArgType):
         index_key = IndexKey(index)
