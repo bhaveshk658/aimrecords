@@ -3,6 +3,7 @@ import io
 import gzip
 from shutil import rmtree
 from typing import Union, Optional, Dict, Tuple
+import pickle
 
 from aimrecords.record_storage.consts import (
     RECORD_OFFSET_SIZE,
@@ -115,6 +116,18 @@ class Writer(object):
         if self._current_bucket_overflow():
             self._finalize_current_bucket()
 
+        if secondary_indexing:
+            for key in secondary_indexing.keys():
+                tree_name = os.path.join(self.path,
+                                 '{}.tree'.format(key))
+                with open(tree_name, 'rb') as tree_file:
+                    tree = pickle.load(tree_file)
+                tree.insert(secondary_indexing[key], data)
+
+                with open(tree_name, 'wb') as tree_file:
+                    pickle.dump(tree, tree_file)
+    
+
         
 
     def register_index(self, index: IndexArgType):
@@ -209,3 +222,10 @@ class Writer(object):
         self.current_bucket_file.seek(0)
 
         self.save_metadata()
+
+    def add_tree(self, name):
+        tree = BPTree(20)
+
+        file_name = '{}.tree'.format(name)
+        tree_file = open(os.path.join(self.path, file_name), 'wb')
+        pickle.dump(tree, tree_file)

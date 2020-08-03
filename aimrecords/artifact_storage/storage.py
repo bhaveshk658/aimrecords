@@ -56,6 +56,9 @@ class Storage:
         assert self._mode == self.WRITING_MODE
 
         artifact = self._get_artifact(artifact_name)
+        if secondary_indexing:
+            for key in secondary_indexing.keys():
+                artifact.add_tree(key)
         artifact.append_record(data, indexing, secondary_indexing)
 
         return artifact.records_num
