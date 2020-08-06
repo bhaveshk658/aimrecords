@@ -93,14 +93,12 @@ class Reader(object):
         if indexing is not None:
             index = self._get_index(indexing).get(index)
 
-        if secondary_indexing != "":
+        if secondary_indexing:
             tree_name = os.path.join(self.path,
                                  '{}.tree'.format(secondary_indexing))
             with open(tree_name, 'rb') as tree_file:
                 tree = pickle.load(tree_file)
             index = tree[index]
-
-
 
         if index >= self.get_records_num():
             raise IndexError('index out of range')
@@ -241,7 +239,7 @@ class ReaderIterator(Reader, Iterator):
     def __init__(self, *args, **kwargs):
         super(ReaderIterator, self).__init__(*args, **kwargs)
         self.applied_index = None
-        self.secondary_indexing = ""
+        self.secondary_indexing = None
 
     def __getitem__(self, item: Optional[Union[int, Tuple[int, ...], slice]]
                     ) -> iter:
@@ -270,7 +268,10 @@ class ReaderIterator(Reader, Iterator):
     def __next__(self) -> bytes:
         try:
             idx = next(self._iter)
-            return self.get(idx, self.applied_index, self.secondary_indexing)
+            if self.secondary_indexing:
+                return self.get(idx, self.applied_index, self.secondary_indexing)
+            else:
+                return self.get(idx, self.applied_index)
         except (IndexError, StopIteration):
             self._iter = None
             raise StopIteration
