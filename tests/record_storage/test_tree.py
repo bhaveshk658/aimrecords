@@ -14,6 +14,8 @@ class TreeTests(unittest.TestCase):
 
         for i in range(2000):
             self.assertEqual(str(i), tree[i])
+        
+        self.assertIsNone(tree[-1])
 
     def test_add_get_rand(self):
         tree = BPTree(20)

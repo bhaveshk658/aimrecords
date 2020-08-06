@@ -145,4 +145,7 @@ class BPTree():
             index = node.search(key)
             node = node.children[index]
         
-        return node.children[node.search(key) - 1]
+        if key in node.keys:
+            return node.children[node.search(key) - 1]
+        else:
+            print("Key does not exist in tree")
