@@ -254,11 +254,11 @@ class ReaderIterator(Reader, Iterator):
             self._iter = iter(item)
         elif isinstance(item, slice):
             start, stop, step = item.start, item.stop, item.step
-            if self.applied_index is None:
-                indices_range = range(self.get_records_num())
-            else:
+            if self.applied_index:
                 indices_range = range(
                     self._get_index(self.applied_index).indexed_records_num())
+            else:
+                indices_range = range(self.get_records_num())
             self._iter = iter(indices_range[start:stop:step])
         else:
             raise TypeError('expected slice or tuple of indices')

@@ -113,15 +113,7 @@ class Writer(object):
             self.register_index(index)
 
         if secondary_indexing:
-            for key in secondary_indexing.keys():
-                tree_name = os.path.join(self.path,
-                                 '{}.tree'.format(key))
-                with open(tree_name, 'rb') as tree_file:
-                    tree = pickle.load(tree_file)
-                tree.insert(secondary_indexing[key], self.records_num)
-
-                with open(tree_name, 'wb') as tree_file:
-                    pickle.dump(tree, tree_file)
+            self.register_secondary_index(secondary_indexing)
 
         self.records_num += 1
 
@@ -140,6 +132,18 @@ class Writer(object):
 
         index_inst = self.indexes[index_key]
         index_inst.register_record(self.records_num)
+
+    def register_secondary_index(self, secondary_indexing: Dict = None):
+        for key in secondary_indexing.keys():
+            tree_name = os.path.join(self.path,
+                                '{}.tree'.format(key))
+            with open(tree_name, 'rb') as tree_file:
+                tree = pickle.load(tree_file)
+            tree.insert(secondary_indexing[key], self.records_num)
+
+            with open(tree_name, 'wb') as tree_file:
+                pickle.dump(tree, tree_file)
+
 
     def flush(self):
         self.current_bucket_file.flush()
